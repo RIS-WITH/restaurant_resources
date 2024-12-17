@@ -1,0 +1,28 @@
+<launch>
+    <arg name="onto_display" default="false"/>
+    <arg name="onto_config_file" default="none"/>
+    <arg name="onto_intern_file" default="none"/>
+    <arg name="onto_robot_file" default="none"/>
+    <arg name="onto_human_file" default="none"/>
+    <arg name="onto_files" default="
+    $(find restaurant_resources)/ontologies/restaurant_building.owl
+    $(find restaurant_resources)/ontologies/restaurant_menu.owl
+    "/>
+    <arg name="onto_language" default="fr"/>
+    <arg name="onto_root" default="pr2"/>
+
+    <group>
+        <include file="$(find ontologenius)/launch/ontologenius_multi_full.launch">
+            <arg name="display" value="$(arg onto_display)"/>
+            <arg name="config_file" value="$(arg onto_config_file)"/>
+            <arg name="files" value="$(arg onto_files)"/>
+            <arg name="intern_file" value="$(arg onto_intern_file)"/>
+            <arg name="robot_file" value="$(arg onto_robot_file)"/>
+            <arg name="human_file" value="$(arg onto_human_file)"/>
+            <arg name="language" default="$(arg onto_language)"/>
+            <arg name="root" default="$(arg onto_root)"/>
+        </include>
+    </group>
+
+
+</launch>

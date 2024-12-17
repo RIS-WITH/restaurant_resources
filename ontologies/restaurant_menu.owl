@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:restaurant_menu="https://github.com/RIS-WITH/dt_resources/blob/master/ontologies/restaurant_menu#"
+     xmlns:cg_dishes="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_dishes#"     
+     xmlns:restaurant_building="https://github.com/RIS-WITH/common_ground_ontology/blob/master/restaurant_building#"     
+     xmlns:common_ground="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_root#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/dt_resources/blob/master/ontologies/restaurant_menu">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_root"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_restaurant"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_dishes"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_agents"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/restaurant_building"/>
+    </owl:Ontology>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    
+    <!-- restaurant_menu#MimosaEgg -->
+
+    <owl:Class rdf:about="restaurant_menu#MimosaEgg">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Starter"/>
+        <rdfs:label xml:lang="en">Mimosa Egg</rdfs:label>
+        <rdfs:label xml:lang="fr">Oeuf Mimosa</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#CharcuteriePlatter -->
+
+    <owl:Class rdf:about="restaurant_menu#CharcuteriePlatter">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Appetizers"/>
+        <rdfs:label xml:lang="en">Charcuterie Platter</rdfs:label>
+        <rdfs:label xml:lang="fr">Assiette de Charcuterie</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#RibSteaks -->
+
+    <owl:Class rdf:about="restaurant_menu#RibSteaks">
+        <rdfs:subClassOf rdf:resource="cg_dishes#MainCourses"/>
+        <rdfs:label xml:lang="en">Rib Steaks</rdfs:label>
+        <rdfs:label xml:lang="fr">Côtes de Boeuf</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Salad -->
+
+    <owl:Class rdf:about="restaurant_menu#Salad">
+        <rdfs:subClassOf rdf:resource="cg_dishes#SideDishes"/>
+        <rdfs:label xml:lang="en">Salad</rdfs:label>
+        <rdfs:label xml:lang="fr">Salade</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Chips -->
+
+    <owl:Class rdf:about="restaurant_menu#Chips">
+        <rdfs:subClassOf rdf:resource="cg_dishes#SideDishes"/>
+        <rdfs:label xml:lang="en">Chips</rdfs:label>
+        <rdfs:label xml:lang="fr">Frites</rdfs:label>
+    </owl:Class>
+    
+
+    <!-- restaurant_menu#ChocolateMousse -->
+
+    <owl:Class rdf:about="restaurant_menu#ChocolateMousse">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Desserts"/>
+        <rdfs:label xml:lang="en">Chocolate Mousse</rdfs:label>
+        <rdfs:label xml:lang="fr">Mousse au Chocolat</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Coke -->
+
+    <owl:Class rdf:about="restaurant_menu#Coke">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Beverages"/>
+        <rdfs:label xml:lang="en">Coke</rdfs:label>
+        <rdfs:label xml:lang="fr">Coca-Cola</rdfs:label>
+    </owl:Class>
+
+    <!-- restaurant_menu#IceTea -->
+
+    <owl:Class rdf:about="restaurant_menu#IceTea">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Beverages"/>
+        <rdfs:label xml:lang="en">Ice Tea</rdfs:label>
+        <rdfs:label xml:lang="fr">Thé Glacé</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Water -->
+
+    <owl:Class rdf:about="restaurant_menu#Water">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Beverages"/>
+        <rdfs:label xml:lang="en">Water</rdfs:label>
+        <rdfs:label xml:lang="fr">Eau</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Beer -->
+
+    <owl:Class rdf:about="restaurant_menu#Beer">
+        <rdfs:subClassOf rdf:resource="cg_dishes#AlcoholicDrinks"/>
+        <rdfs:label xml:lang="en">Beer</rdfs:label>
+        <rdfs:label xml:lang="fr">Bière</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Wine -->
+
+    <owl:Class rdf:about="restaurant_menu#Wine">
+        <rdfs:subClassOf rdf:resource="cg_dishes#AlcoholicDrinks"/>
+        <rdfs:label xml:lang="en">Wine</rdfs:label>
+        <rdfs:label xml:lang="fr">Vin</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Coffee -->
+
+    <owl:Class rdf:about="restaurant_menu#Coffee">
+        <rdfs:subClassOf rdf:resource="cg_dishes#HotDrinks"/>
+        <rdfs:label xml:lang="en">Coffee</rdfs:label>
+        <rdfs:label xml:lang="fr">Café</rdfs:label>
+    </owl:Class>
+
+
+    <!-- restaurant_menu#Tea -->
+
+    <owl:Class rdf:about="restaurant_menu#Tea">
+        <rdfs:subClassOf rdf:resource="cg_dishes#HotDrinks"/>
+        <rdfs:label xml:lang="en">Tea</rdfs:label>
+        <rdfs:label xml:lang="fr">Thé</rdfs:label>
+    </owl:Class>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                   //
+    // Object properties                                                                 //
+    //                                                                                   //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+     <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+     <!-- restaurant_menu#menu_0 -->
+
+    <!--owl:NamedIndividual rdf:about="restaurant_menu#menu_0">
+        <rdf:type rdf:resource="cg_dishes#Menu"/-->
+    <owl:Class rdf:about="restaurant_menu#Menu0">
+        <rdfs:subClassOf rdf:resource="cg_dishes#Menu"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#MimosaEgg"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#RibSteaks"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#Salad"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#ChocolateMousse"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#Coke"/>
+        <cg_dishes:hasDishes rdf:resource="restaurant_menu#Coffee"/>
+    </owl:NamedIndividual>
+
+
+
+
+     
+</rdf:RDF>
+
+
+
+   
+
+
+
+
+
