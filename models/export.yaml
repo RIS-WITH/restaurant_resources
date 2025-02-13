@@ -1,0 +1,121 @@
+include: 
+  - package://overworld/config/adream.yaml
+
+chair_1_table_1:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 0.0352
+  position:
+    x: 3.7294
+    y: 8.6557
+    z: 0.0198
+chair_1_table_2:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: -1573.9381
+  position:
+    x: 7.2708
+    y: 6.0308
+    z: 0.0
+chair_1_table_3:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: -3.1416
+  position:
+    x: 2.8716
+    y: 5.7506
+    z: 0.1265
+chair_2_table_1:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 1.606
+  position:
+    x: 2.9163
+    y: 8.1028
+    z: 0.0198
+chair_2_table_2:
+  position:
+    x: 7.2485
+    y: 7.166
+    z: 0.0
+chair_3_table_1:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 3.1768
+  position:
+    x: 3.7294
+    y: 7.474
+    z: 0.0198
+cleaning_table:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: -4.7124
+  position:
+    x: 5.7871
+    y: 12.0611
+    z: 0.0022
+cooking_table:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 1.5708
+  position:
+    x: 2.8841
+    y: 11.7864
+    z: 0.0483
+hatch_table_0:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: -1.5708
+  position:
+    x: 4.3103
+    y: 9.785
+    z: 1.0
+table_1:
+  orientation:
+    x: 0.0
+    y: -0.0
+    # z: -1.5708
+  position:
+    x: 3.7235
+    y: 8.0968
+    z: 0.4044
+table_2:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: -1.5708
+  position:
+    x: 7.2666
+    y: 6.6329
+    z: 1.0
+table_3:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 4.7124
+  position:
+    x: 2.8254
+    y: 6.2907
+    z: 1.0
+waiting_sofa:
+  orientation:
+    x: 0.0
+    y: -0.0
+    z: 1569.0587
+  position:
+    x: 7.3822
+    y: 4.0926
+    z: 1.0
+welcome_desk:
+  position:
+    x: 4.4455
+    y: 5.0709
+    z: 1.0

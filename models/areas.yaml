@@ -1,0 +1,20 @@
+cleaning_area:
+  pose:
+    z: 1.0
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/cleaning_area.obj
+dinning_area:
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/dinning_area.obj
+hast_area:
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/hast_area.obj
+kitchen_area:
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/kitchen_area.obj
+waiting_area:
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/waiting_area.obj
+welcom_area:
+  half_height: 1.0
+  polygon_path: package://restaurant_resources/models/OBJ/areas/welcom_area.obj
