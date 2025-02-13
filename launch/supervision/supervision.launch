@@ -1,0 +1,4 @@
+<launch>
+  <arg name="priorities_files" default="$(find restaurant_resources)/configs/priorities/restaurant_priorities_expectations.yaml"/>
+  <node name="priorities_manager" pkg="supervision" type="supervision_priority_node" output="screen" args="-p $(arg priorities_files)"/>
+</launch>
