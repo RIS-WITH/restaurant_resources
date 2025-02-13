@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns:restaurant_building="https://github.com/RIS-WITH/dt_resources/blob/master/ontologies/restaurant_building#"
+<rdf:RDF xmlns:restaurant_building="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_building#"
      xmlns:cg_restaurant="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_restaurant#"
      xmlns:cg_entities="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities#"
+     xmlns:ris_furnitures="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_furnitures#"
      xmlns:cg_area="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_area#"
      xmlns:cg_language="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_language#"
      xmlns:ris_agents="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_agents#"
@@ -11,11 +12,13 @@
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="https://github.com/RIS-WITH/dt_resources/blob/master/ontologies/restaurant_building">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_building">
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_root"/>
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_restaurant"/>
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_dishes"/>
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_agents"/>
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_furnitures"/>
+      <owl:imports rdf:resource="https://github.com/sarthou/overworld/blob/master/ontologies/adream_building"/>
     </owl:Ontology>
 
 
@@ -73,10 +76,11 @@
 
     <owl:NamedIndividual rdf:about="restaurant_building#table_1">
         <rdf:type rdf:resource="cg_restaurant#RestaurantTable"/>
+        <owl:sameAs rdf:resource="ris_furnitures#low_table_1"/>
         <rdfs:label xml:lang="fr">une</rdfs:label>
         <rdfs:label xml:lang="fr">table une</rdfs:label>
         <cg_area:isInRoom rdf:resource="cg_restaurant#dinning_room_0"/>
-        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</restaurant_building:TableCapacity>
+        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</cg_restaurant:hasTableCapacity>
     </owl:NamedIndividual>
 
 
@@ -84,10 +88,11 @@
 
     <owl:NamedIndividual rdf:about="restaurant_building#table_2">
         <rdf:type rdf:resource="cg_restaurant#RestaurantTable"/>
+        <owl:sameAs rdf:resource="ris_furnitures#kallax_1"/>
         <rdfs:label xml:lang="fr">deux</rdfs:label>
         <rdfs:label xml:lang="fr">table deux</rdfs:label>
         <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
-        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</restaurant_building:TableCapacity>
+        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</cg_restaurant:hasTableCapacity>
     </owl:NamedIndividual>
 
 
@@ -95,10 +100,11 @@
 
     <owl:NamedIndividual rdf:about="restaurant_building#table_3">
         <rdf:type rdf:resource="cg_restaurant#RestaurantTable"/>
+        <owl:sameAs rdf:resource="ris_furnitures#kallax_2"/>
         <rdfs:label xml:lang="fr">trois</rdfs:label>
         <rdfs:label xml:lang="fr">table trois</rdfs:label>
         <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
-        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</restaurant_building:TableCapacity>
+        <cg_restaurant:hasTableCapacity rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</cg_restaurant:hasTableCapacity>
     </owl:NamedIndividual>
 
 
@@ -121,19 +127,128 @@
     <!-- restaurant_building#payement_area_0 -->
 
     <owl:NamedIndividual rdf:about="restaurant_building#payement_area_0">
+        <owl:sameAs rdf:resource="restaurant_building#welcoming_area_0"/>
         <rdf:type rdf:resource="cg_restaurant#PayementArea"/>
         <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
     </owl:NamedIndividual>
 
 
-    <!-- restaurant_building#hatch_0 -->
+    <!-- restaurant_building#hatch_area -->
 
-    <owl:NamedIndividual rdf:about="restaurant_building#hatch_0">
+    <owl:NamedIndividual rdf:about="restaurant_building#hatch_area">
         <rdf:type rdf:resource="cg_restaurant#HatchArea"/>
         <cg_area:isInRoom rdf:resource="restaurant_building#kitchen_1"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#hatch_table_0 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#hatch_table_0">
+        <owl:sameAs rdf:resource="ris_furnitures#ikea_table_1"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#kitchen_1"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#welcome_desk -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#welcome_desk">
+        <owl:sameAs rdf:resource="ris_furnitures#console_1"/>
+        <cg_area:isInArea rdf:resource="restaurant_building#welcoming_area_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#waiting_sofa -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#waiting_sofa">
+        <owl:sameAs rdf:resource="ris_furnitures#sofa_1"/>
+        <cg_area:isInArea rdf:resource="restaurant_building#waiting_area_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#cleaning_table -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#cleaning_table">
+        <owl:sameAs rdf:resource="ris_furnitures#kallax_3"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#kitchen_1"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#cooking_table -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#cooking_table">
+        <owl:sameAs rdf:resource="ris_furnitures#desk_1"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#kitchen_1"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chair_1_table_1 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_1_table_1">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_1"/>
         <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
     </owl:NamedIndividual>
 
+
+    <!-- restaurant_building#chair_2_table_1 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_2_table_1">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_2"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chair_3_table_1 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_3_table_1">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_3"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chair_1_table_2 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_1_table_2">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_4"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chair_2_table_2 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_2_table_2">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_5"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chair_1_table_3 -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chair_1_table_3">
+        <owl:sameAs rdf:resource="ris_furnitures#chair_6"/>
+        <cg_area:isInRoom rdf:resource="restaurant_building#dinning_room_0"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- restaurant_building#client -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#client">
+        <rdf:type rdf:resource="cg_restaurant#ClientRole"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#waiter -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#waiter">
+        <rdf:type rdf:resource="cg_restaurant#WaiterRole"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_building#chef -->
+
+    <owl:NamedIndividual rdf:about="restaurant_building#chef">
+        <rdf:type rdf:resource="cg_restaurant#ChefRole"/>
+    </owl:NamedIndividual>
 
 
 

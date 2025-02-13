@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:restaurant_expectations="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_expectations#"
+     xmlns:cg_entities="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_expectations">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities"/>
+    </owl:Ontology>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- restaurant_expectations#Expectation -->
+
+    <owl:Class rdf:about="restaurant_expectations#Expectation">
+        <rdfs:subClassOf rdf:resource="cg_entities#ConceptualEntity"/>
+    </owl:Class>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                   //
+    // Object properties                                                                 //
+    //                                                                                   //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- restaurant_expectations#expect -->
+
+    <owl:ObjectProperty rdf:about="restaurant_expectations#expect">
+        <rdfs:domain rdf:resource="cg_entities#Entity"/>
+        <rdfs:range rdf:resource="restaurant_status#Expectation"/>
+    </owl:ObjectProperty>
+
+
+     <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- restaurant_expectations#etre_accueilli -->
+
+    <owl:NamedIndividual rdf:about="restaurant_expectations#etre_accueilli">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_expectations#etre_assis -->
+
+    <owl:NamedIndividual rdf:about="restaurant_expectations#etre_assis">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_expectations#commander -->
+
+    <owl:NamedIndividual rdf:about="restaurant_expectations#commander">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_expectations#etre_servi_de_l_entree -->
+
+    <owl:NamedIndividual rdf:about="restaurant_expectations#etre_servi_de_l_entree">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_expectations#manger_l_entree -->
+
+    <owl:NamedIndividual rdf:about="restaurant_expectations#manger_l_entree">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+
+
+
+
+
+
+</rdf:RDF>

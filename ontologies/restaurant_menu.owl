@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns:restaurant_menu="https://github.com/RIS-WITH/dt_resources/blob/master/ontologies/restaurant_menu#"
      xmlns:cg_dishes="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_dishes#"     
-     xmlns:restaurant_building="https://github.com/RIS-WITH/common_ground_ontology/blob/master/restaurant_building#"     
      xmlns:common_ground="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_root#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -13,7 +12,6 @@
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_restaurant"/>
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/kitchen/CG_dishes"/>
       <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/ris_agents"/>
-      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/restaurant_building"/>
     </owl:Ontology>
 
 

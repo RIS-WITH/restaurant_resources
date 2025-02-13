@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:restaurant_status="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_status#"
+     xmlns:cg_entities="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_status">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities"/>
+    </owl:Ontology>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- restaurant_status#Status -->
+
+    <owl:Class rdf:about="restaurant_status#Status">
+        <rdfs:subClassOf rdf:resource="cg_entities#ConceptualEntity"/>
+    </owl:Class>
+
+
+    <!-- restaurant_status#ClientStatus -->
+
+    <owl:Class rdf:about="restaurant_status#ClientStatus">
+        <rdfs:subClassOf rdf:resource="restaurant_status#Status"/>
+    </owl:Class>
+
+
+    <!-- restaurant_status#TableStatus -->
+
+    <owl:Class rdf:about="restaurant_status#TableStatus">
+        <rdfs:subClassOf rdf:resource="restaurant_status#Status"/>
+    </owl:Class>
+
+
+    <!-- restaurant_status#DishStatus -->
+
+    <owl:Class rdf:about="restaurant_status#DishStatus">
+        <rdfs:subClassOf rdf:resource="restaurant_status#Status"/>
+    </owl:Class>
+
+
+    <!-- restaurant_status#OrderStatus -->
+
+    <owl:Class rdf:about="restaurant_status#OrderStatus">
+        <rdfs:subClassOf rdf:resource="restaurant_status#Status"/>
+    </owl:Class>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //                                                                                   //
+    // Object properties                                                                 //
+    //                                                                                   //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- restaurant_status#hasStatus -->
+
+    <owl:ObjectProperty rdf:about="restaurant_status#hasStatus">
+        <rdfs:domain rdf:resource="cg_entities#Entity"/>
+        <rdfs:range rdf:resource="restaurant_status#Status"/>
+    </owl:ObjectProperty>
+
+
+     <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- restaurant_status#waiting -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#waiting">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#waiting_to_order -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#waiting_to_order">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#seated -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#seated">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#ordered -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#ordered">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#served -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#served">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#welcomed -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#welcomed">
+        <rdf:type rdf:resource="restaurant_status#ClientStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#free -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#free">
+        <rdf:type rdf:resource="restaurant_status#TableStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#occupied -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#occupied">
+        <rdf:type rdf:resource="restaurant_status#TableStatus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- restaurant_status#dirty -->
+
+    <owl:NamedIndividual rdf:about="restaurant_status#dirty">
+        <rdf:type rdf:resource="restaurant_status#TableStatus"/>
+    </owl:NamedIndividual>
+
+
+
+
+
+</rdf:RDF>
