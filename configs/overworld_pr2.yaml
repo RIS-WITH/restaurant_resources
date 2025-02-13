@@ -1,0 +1,38 @@
+modules:
+  robot:
+    JointStatePerceptionModule: pr2_joints
+  # humans:
+    # OptitrackPerceptionModule: optitrack
+  objects:
+    Pr2GripperPerceptionModule:
+      - pr2_left_gripper
+      - pr2_right_gripper
+    StaticObjectsPerceptionModule: static
+  areas:
+    ObjAreasPerceptionModule: obj_area
+
+pr2_joints:
+  robot_name : pr2
+  min_period : 0.06
+
+pr2_left_gripper:
+  side: 0 # = left
+  pressure_threshold: 400
+  distance_threshold: 0.03
+
+pr2_right_gripper:
+  side: 1 # = right
+  distance_threshold: 0.03
+  pressure_threshold: 90
+
+# optitrack:
+#   name: human_1
+#   offset_x: 6.4868
+#   offset_y: 2.8506
+
+static:
+  file: package://restaurant_resources/models/export.yaml
+
+
+obj_area:
+  file: package://restaurant_resources/models/areas.yaml

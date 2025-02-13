@@ -1,0 +1,56 @@
+priorities:
+  - name: "AccueillirClients"
+    priority: 6
+    precondition: ["?A onto:hasRole client. ?A onto:isInArea WelcomeArea."] # evenement d'activation
+    entry_state:  # preconditions
+      - ["Robot hasEmptyHand bool#true","Robot isInArea WelcomeArea"]
+    variables: []
+
+  - name: "InstallerLesClients"
+    priority: 5
+    precondition: ["?A onto:hasRole client. ?A onto:hasStatus welcomed"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea WelcomeArea"]
+    variables: ["?T","?A"]
+
+  - name: "PrendreCommande"
+    priority: 4
+    precondition: ["?T onto:isA RestaurantTable","?T onto:hasStatus without_order"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","?T hasArea ?A","Robot isInArea ?A"]
+    variables: ["?T"]
+
+  - name: "ServirRepas"
+    priority: 3
+    precondition: ["?D onto:isA Dish","?D onto:hasStatus ready_to_serve"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea HatchArea"]
+    variables: ["?T","?D"]
+
+  - name: "DebarasserTable"
+    priority: 2
+    precondition: ["?T onto:isA RestaurantTable","?T onto:hasDishes ?D","?D onto:hasStatus empty"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","?T hasArea ?A","Robot isInArea ?A"]
+    variables: ["?T","?D"]
+
+  - name: "EncaisserClients"
+    priority: 1
+    precondition: ["?C onto:hasRole client","?C onto:hasStatus ready_to_pay"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea WelcomeArea"]
+    variables: ["?C","?O"]
+
+  - name: "NettoyerTable"
+    priority: 0
+    precondition: ["?T onto:isA RestaurantTable","?T onto:hasStatus dirty_table"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","?T hasArea ?A","Robot isInArea ?A"]
+    variables: ["?T"]
+
+  - name: "AL"
+    priority: -1
+    precondition: []
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea DinningArea"]
+    variables: []
