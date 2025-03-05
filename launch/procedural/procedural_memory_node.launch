@@ -1,0 +1,4 @@
+<launch>
+    <arg name="configuration_file" default="$(find restaurant_resources)/domaines/v2/robot_action.dom"/>
+    <node name="procedural_memory_node" pkg="procedural" type="procedural_memory_node" output="screen" args="-f $(arg configuration_file)"/>
+</launch>
