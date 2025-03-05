@@ -1,0 +1,220 @@
+include {
+    "package::restaurant_resources/domaines/restaurant_domain_action.dom";
+    "package::restaurant_resources/domaines/restaurant_domain_task.dom";
+    "package::restaurant_resources/domaines/restaurant_domain_signaligne.dom";
+ };
+
+actions {
+
+	action Pick(Agent A, Pickable O) {
+		preconditions {
+		    O.isOn != NULL;
+			A >> O.isVisible;
+			A >> O.isReachable;
+			A.hasInRightHand == NULL;
+		};
+		effects {
+			FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+			A.hasInRightHand = O;
+			O.isOn = NULL;
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+	action Place(Agent A, Pickable O, Object S) {
+		preconditions {
+			A.hasInRightHand == O;
+		};
+		effects {
+			A.hasInRightHand = NULL;
+			O.isOn = S;
+			FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+			FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+		};
+		cost{cost1()};
+		duration{duration1()};
+	}
+
+
+	action Give(Agent A1, Pickable O, Agent A2) {
+		preconditions {
+			A1.hasInRightHand == O;
+			A2.hasInRightHand == NULL;
+		};
+		effects {
+			A1.hasInRightHand = NULL;
+			A2.hasInRightHand = O;
+		};
+		cost{cost10()};
+		duration{duration1()};
+	}
+}
+	// ----------------------------------------------
+//
+tasks {
+	task Get(Agent A, Pickable O) {
+		goal{A.hasInRightHand == O;};
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A >> O.isReachable;
+				O.isOn != NULL;
+			};
+			subtasks {
+				1:Pick(A, O);
+			};
+		},
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A >> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				T = SELECT(Table, {O.isOn == T;});
+				1:Place(A, C2, T);
+				2:Pick(A, O)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand == NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				B = SELECT(Agent, {B >> O.isReachable;});
+				1:Get(B, O);
+				2:Give(B, O, A)>1;
+			};
+		}
+		{
+			preconditions{
+				A.hasInRightHand != NULL;
+				A !>> O.isReachable;
+			};
+			subtasks {
+				C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+				B = SELECT(Agent, {B >> O.isReachable;});
+				T = SELECT(Table, {});
+				1:Place(A, C2, T);
+				2:Get(B, O)>1;
+				3:Give(B, O, A)>2;
+			};
+		}
+	}
+
+	task Place(Agent A, Pickable O, Table T) {
+		goal{O.isOn == T;};
+		{
+			preconditions {};
+			subtasks {
+				1:Get(A, O);
+				2:Place(A, O, T)>1;
+			};
+		}
+
+	}
+
+	task PresentTable(Client C,RestaurantTable T) {
+        goal{C hasTable T; C hasStatus sitting;};
+        preconditions {
+            table_area = SELECT(Area, {T hasArea table_area;});
+            C isInArea table_area;
+            ?EXECUTOR isInArea table_area;
+        };
+        {
+            preconditions {};
+            subtasks {
+                T = SELECT(RestaurantTable, {T.hasStatus free_table; T.capacity >= C.nombre;});
+                1:Sit(C, T);
+            };
+        }
+    }
+
+
+
+}
+
+priorities {
+    priority InstallerClients(Client C, RestaurantTable T) {
+        event {
+            C onto:hasRole client;
+            C onto:hasStatus welcomed;
+            C onto:hasAvailableTable T;
+        };
+        entry_state {
+            SELECT ?client_area WHERE {C hasArea ?client_area};
+            Robot hasHandStatus free;
+            Robot isInArea client_area;
+        };
+        priority_level{1};
+        goal{C hasTable T; C hasStatus sitting;};
+        methods {
+            1: {
+                preconditions {
+                    SELECT ?table_area WHERE {T hasArea ?table_area};
+                    NOT Robot isInArea  table_area;
+                    NOT client isInArea table_area;
+                };
+                subtasks {
+                    1:GoTo(T);
+                    2:PresentTable(C, T)>1;
+                };
+            }
+            2: {
+                preconditions {
+                    table_area = SELECT(Area, {T hasArea table_area;});
+                    Robot isInArea table_area;
+                    NOT client isInArea table_area;
+                };
+                subtasks {
+                    1:GoToClient(C);
+                    2:GoTo(T)>2;
+                    3:PresentTable(C, T)>3;
+                };
+            }
+            already_in_place: {
+                preconditions {
+                    SELECT ?table_area WHERE {T hasArea ?table_area};
+                    Robot isInArea table_area;
+                    client isInArea table_area;
+                };
+                subtasks {
+                    1:PresentTable(C, T);
+                };
+                cost{1};
+
+            }
+            ask_for: {
+                preconditions {
+                    SELECT ?table_area WHERE {T hasArea ?table_area};
+                    Robot isInArea table_area;
+                    client isInArea table_area;
+                };
+                subtasks {
+                    1:AskforWaiter(W);
+                    2:PresentTable(W, T)>1;
+                };
+//                cost{10};
+
+            }
+        };
+        description{
+            ?? isA InstallerClientsPriority;
+            ?? isPerformedBy ?EXECUTOR;
+            ?? isPerformedOn C;
+            ?? hasInstall T;
+        };
+//        cost{1};
+        duration{20};
+        parameters {
+            ttl: 20;
+        };
+    }
+}
+
+
+// ----------------------------------------------
+
+

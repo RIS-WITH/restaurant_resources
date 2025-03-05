@@ -1,0 +1,112 @@
+// ------------------------------
+// Définition des actions
+// ------------------------------
+actions {
+    action Serve(Agent A, Client C,Dish D) {
+        preconditions {
+            SELECT ?tableArea WHERE {?C hasTable ?T; ?T hasArea ?tableArea};
+            ?A hasInHand ?D;
+            ?C hasStatus waiting_to_serve;
+            ?C hasOrder ?O;
+            ?D isPartOf ?O;
+            ?A isInArea ?tableArea;
+        };
+        effects {
+            NOT A hasInHand D;
+            NOT C expect servir;
+            C hasStatus served;
+            D hasStatus served;
+        };
+        description {
+            ?? isA PickAction;
+            ?? isPerformBy ?A;
+            ?A hasServed ?D;
+            ?? isPerformOn ?C;
+            ?C isServedWith ?D;
+        };
+    }
+
+    action Drop(Agent A, Dish D) {
+        preconditions {
+            A isInArea WashingArea;
+        };
+        effects {
+           D isInArea WashingArea;
+           NOT A hasInHand D;
+        };
+        description {
+            ?? isA DropAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?D;
+        };
+    }
+
+    action Take(Agent A, Dish D)
+    {
+        preconditions {
+            A isInArea HatchArea;
+            D isInArea HatchArea;
+        };
+        effects {
+           A hasInHand D;
+           NOT D isInArea HatchArea;
+        };
+        description {
+            ?? isA TakeAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?D;
+        };
+    }
+
+    action goTo(Agent A, Location L) {
+        preconditions {
+            A isCapableOf moving;
+            NOT A isAt L;
+        };
+        effects {
+           A isAt L;
+        };
+        description {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+    }
+
+    action presentMenu(agent A, Menu M) {
+        preconditions {
+            Select ?Table WHERE {?Table hasArea ?TableArea};
+            A isInArea ?TableArea;
+            ?Table hasClient ?C;
+            ?C hasStatus installed;
+        };
+        effects {
+           NOT ?C hasStatus installed;
+           ?C hasStatus A isAt L;;
+        };
+        description {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+    }
+
+    action askForOrder(agent A,Client C) {
+        execution {
+            call_service("/ask_for_order", {"client": C});
+        };
+    }
+
+    action welcomeClient(agent A,Client C) {
+        execution {
+            verbalize(WELCOME_MESSAGE);
+            askHowMany(C);
+        };
+    }
+
+    action yellOrder(agent A,Order O) {
+        execution {
+            verbalize_order(O);
+        };
+    }
+
+
+}

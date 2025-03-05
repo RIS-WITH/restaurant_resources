@@ -1,0 +1,42 @@
+actions {
+    action Serve(Agent A, Client C,Dish D) {
+       recognition {
+            sequence {
+                ?A isInArea ?T;
+                ?C hasInHand ?D;
+                NOT ?A hasInHand ?D(Dish) REQUIRED;
+            };
+            parameters {
+                ttl(20);
+            }
+       };
+    }
+
+    action Drop(Agent A, Dish D) {
+        recognition {
+            sequence {
+                ?A isInArea WashingArea;
+                ?D isInArea WashingArea REQUIRED;
+                NOT ?A hasInHand ?D;
+            }
+            parameters {
+                ttl(20);
+            }
+        }
+    }
+
+    action Take(Agent A, Dish D) {
+        recognition {
+            sequence {
+                ?A isInArea HatchArea;
+                NOT ?D isInArea HatchArea REQUIRED;
+                ?A hasInHand ?D REQUIRED;
+            }
+            parameters {
+                ttl(20);
+            }
+        }
+    }
+
+
+};

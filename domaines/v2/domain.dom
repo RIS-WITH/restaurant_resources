@@ -1,0 +1,186 @@
+include {
+    "package::restaurant_resources/domaines/v2/action.dom";
+    "package::restaurant_resources/domaines/v2/task.dom";
+    "package::restaurant_resources/domaines/v2/signaling.dom";
+    "package::restaurant_resources/domaines/v2/priorities.dom";
+    "package::restaurant_resources/domaines/v2/robot_action.dom";
+};
+
+// ------------------------------
+// Définition des actions
+// ------------------------------
+actions {
+    action Pick(Agent A, Pickable O) {
+        preconditions {
+            O.isOn != NULL;
+            A >> O.isVisible;
+            A >> O.isReachable;
+            A.hasInRightHand == NULL;
+        };
+        effects {
+            FORALL(Agent Ag, {Ag >> O.isVisible;}, {O.isVisible =>> Ag;});
+            A.hasInRightHand = O;
+            O.isOn = NULL;
+        };
+        execution {
+            call_service("/pick_object", {"agent": A, "object": O});
+        };
+        cost { cost1(); };
+        duration { duration1(); };
+    }
+
+    action Place(Agent A, Pickable O, Object S) {
+        preconditions { A.hasInRightHand == O; };
+        effects {
+            A.hasInRightHand = NULL;
+            O.isOn = S;
+            FORALL(Agent Ag1, {}, {O.isVisible <<= Ag1;});
+            FORALL(Agent Ag2, {}, {O.isReachable <<= Ag2;});
+        };
+        execution {
+            call_service("/place_object", {"agent": A, "object": O, "surface": S});
+        };
+        cost { cost1(); };
+        duration { duration1(); };
+    }
+
+    action Give(Agent A1, Pickable O, Agent A2) {
+        preconditions {
+            A1.hasInRightHand == O;
+            A2.hasInRightHand == NULL;
+        };
+        effects {
+            A1.hasInRightHand = NULL;
+            A2.hasInRightHand = O;
+        };
+        execution {
+            call_service("/give_object", {"agent_from": A1, "agent_to": A2, "object": O});
+        };
+        cost { cost10(); };
+        duration { duration1(); };
+    }
+}
+
+// ------------------------------
+// Définition des intentions
+// ------------------------------
+intentions {
+    role client {
+        intention etre_accueilli {
+            conditions {
+                ?? isInArea RestaurantArea;
+                NOT (?? isEmployedIn Restaurant);
+            };
+        }
+        intention etre_assis {
+            conditions {
+                ?? hasStatus welcomed;
+                ?? hasAvailableTable RestaurantTable;
+            };
+        }
+        intention commander {
+            conditions { ?? hasStatus waiting_to_order; };
+        }
+    }
+
+    role chief {
+        intention preparer_plat {
+            conditions {
+                ?? hasStatus cooking;
+                ?? hasOrder ?O;
+            };
+        }
+        intention attend_d_envoyer_les_plats {
+            conditions {
+                Order hasStatus readyToServe;
+                ?? hasStatus waiting_to_serve;
+            };
+        }
+    }
+}
+
+// ------------------------------
+// Définition des tâches
+// ------------------------------
+tasks {
+    task Get(Agent A, Pickable O) {
+        goal { A.hasInRightHand == O; };
+        {
+            preconditions {
+                A.hasInRightHand == NULL;
+                A >> O.isReachable;
+                O.isOn != NULL;
+            };
+            subtasks { 1:Pick(A, O); };
+        },
+        {
+            preconditions {
+                A.hasInRightHand != NULL;
+                A >> O.isReachable;
+            };
+            subtasks {
+                C2 = SELECT(Pickable, {A.hasInRightHand == C2;});
+                T = SELECT(Table, {O.isOn == T;});
+                1:Place(A, C2, T);
+                2:Pick(A, O) > 1;
+            };
+        }
+    }
+
+    task Place(Agent A, Pickable O, Table T) {
+        goal { O.isOn == T; };
+        {
+            preconditions {};
+            subtasks {
+                1:Get(A, O);
+                2:Place(A, O, T) > 1;
+            };
+        }
+    }
+}
+
+// ------------------------------
+// Définition des priorités
+// ------------------------------
+priorities {
+    priority InstallerClients(Client C, RestaurantTable T) {
+        event {
+            C onto:hasRole client;
+            C onto:hasStatus welcomed;
+            C onto:hasAvailableTable T;
+        };
+
+        entry_state {
+            SELECT ?client_area WHERE {C hasArea ?client_area};
+            Robot hasHandStatus free;
+            Robot isInArea client_area;
+        };
+
+        priority_level { 1 };
+        goal { C hasTable T; C hasStatus sitting; };
+
+        methods {
+            1: {
+                preconditions {
+                    SELECT ?table_area WHERE {T hasArea ?table_area};
+                    NOT Robot isInArea table_area;
+                    NOT client isInArea table_area;
+                };
+                subtasks {
+                    1:GoTo(T);
+                    2:PresentTable(C, T) > 1;
+                };
+            }
+        };
+
+        description {
+            ?? isA InstallerClientsPriority;
+            ?? isPerformedBy ?EXECUTOR;
+            ?? isPerformedOn C;
+            ?? hasInstall T;
+        };
+
+        duration { 20 };
+        parameters { ttl: 20; };
+    }
+}

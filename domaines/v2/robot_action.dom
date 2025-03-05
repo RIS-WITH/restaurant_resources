@@ -1,0 +1,65 @@
+actions {
+    action Serve(Agent A, Client C,Dish D) {
+       execution {
+            callTriggerService(/present_arm);
+        };
+        description {
+            NOT ?? isA PickAction;
+            ?? isPerformBy ?A;
+            ?A hasServed ?D;
+            ?? isPerformOn ?C;
+            ?C isServedWith ?D;
+        };
+
+    };
+
+    action Drop(Agent A, Dish D) {
+    	execution {
+            callTriggerService(/drop_arm);
+        };
+    };
+
+    action Take(Agent A, Dish D)
+    {
+        execution {
+            callTriggerService(/present_arm);
+        };
+    };
+
+    action goTo(Agent A, Location L) {
+        execution {
+            goTo({location: L});
+        };
+        description {
+            ?? isA GoToAction;
+            ?? isPerformBy ?A;
+            NOT ?A isin ?L;
+        };
+    };
+
+    action presentMenu(Agent A, Menu M) {
+        execution {
+            callMenuService(/present_menu, {agent: A, menu: M});
+        };
+    };
+
+    action askForOrder(Agent A,Client C) {
+        execution {
+            callOrderService(/ask_for_order, {client: C});
+        };
+    };
+
+    action welcomeClient(Agent A,Client C) {
+        execution {
+            verbalize(WELCOME_MESSAGE);
+            askHowMany(C);
+        };
+    };
+
+    action yellOrder(Agent A,Order O) {
+        execution {
+            verbalizeOrder(O);
+        };
+    };
+
+};
