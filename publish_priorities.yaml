@@ -1,0 +1,17 @@
+Init:
+    topic : "/ontologenius/pr2/insert"
+    type : "ontologenius/Insert"
+    values:
+      - "client_1 isA Client"
+
+AcceuilClient:
+    topic : "/ontologenius/pr2/insert"
+    type : "ontologenius/Insert"
+    values:
+      - "client_1 isInArea WelcomeArea"
+
+InstallerLesClients:
+    topic : "/ontologenius/pr2/insert"
+    type : "ontologenius/Insert"
+    values:
+      - "client_1 hasTable table_1"

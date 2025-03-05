@@ -27,12 +27,12 @@ priorities:
       - ["Robot hasEmptyHand bool#true","Robot isInArea HatchArea"]
     variables: ["?T","?D"]
 #
-#  - name: "DebarasserTable"
-#    priority: 2
-#    precondition: ["?T onto:isA RestaurantTable","?T onto:hasDishes ?D","?D onto:hasStatus empty"]
-#    entry_state:
-#      - ["Robot hasEmptyHand bool#true","?T hasArea ?A","Robot isInArea ?A"]
-#    variables: ["?T","?D"]
+  - name: "DebarasserTable"
+    priority: 2
+    precondition: ["?T onto:isA RestaurantTable","?T onto:hasDishes ?D","?D onto:hasStatus empty"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","?T hasArea ?A","Robot isInArea ?A"]
+    variables: ["?T","?D"]
 #
 #  - name: "EncaisserClients"
 #    priority: 1
