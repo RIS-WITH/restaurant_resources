@@ -1,0 +1,307 @@
+include {
+    "package::restaurant_resources/domaines/v2/action.dom";
+    "package::restaurant_resources/domaines/v2/task.dom";
+    "package::restaurant_resources/domaines/v2/signaling.dom";
+    "package::restaurant_resources/domaines/v2/priorities.dom";
+    "package::restaurant_resources/domaines/v2/robot_action.dom";
+};
+
+// ------------------------------
+// Définition des actions
+// ------------------------------
+ACTIONS {
+    ACTION goTo(Agent A, Location L) {
+        PRECONDITIONS {
+            A isCapableOf moving;
+            NOT A isAt L;
+        };
+        EFFECTS {
+           A isAt L;
+        };
+        DESCRIPTION {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+        EXECUTION {
+            call_service("/go_to", {"agent": A, "location": L});
+        };
+    };
+
+    ACTION goToArea(Agent A, Area T) {
+        PRECONDITIONS {
+            A isCapableOf moving;
+            NOT A isInArea T;
+        };
+        EFFECTS {
+           A isInArea T;
+        };
+        DESCRIPTION {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+        EXECUTION {
+            call_service("/go_to_area", {"agent": A, "area": T});
+        };
+    };
+
+    ACTION updateTableStatus(Agent A, Table T)
+    {
+        PRECONDITIONS {
+            A isCapableOf updating;
+        };
+        EFFECTS {
+           T hasStatus ready | occupied | free | reserved | finished;
+        };
+        DESCRIPTION {
+            ?? isA updateTableStatusAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?T;
+
+        };
+        EXECUTION {
+            call_service("/update_table_status", {"agent": A, "table": T});
+        };
+    };
+
+    ACTION patrol(Agent A) {
+        PRECONDITIONS {
+            A isCapableOf moving;
+        };
+        EFFECTS {
+           A isEngagedIn patrolAction;
+        };
+        DESCRIPTION {
+            ?? isA patrolAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?T;
+        };
+        EXECUTION {
+            call_service("/patrol", {"agent": A);
+        };
+    };
+
+
+
+
+
+
+
+//    ACTION Serve(Agent A, Client C,Dish D) {
+//        PRECONDITIONS {
+//            SELECT ?tableArea WHERE {?C onto:hasTable ?T; ?T onto:hasArea ?tableArea;};
+//            ?A hasInHand ?D;
+//            ?C hasStatus waiting_to_serve;
+//            ?C hasOrder ?O;
+//            ?D isPartOf ?O;
+//            ?A isInArea ?tableArea;
+//        };
+//        EFFECTS {
+//          NOT A hasInHand D;
+            NOT C expect servir;
+            C hasStatus served;
+            D hasStatus served;
+        };
+        DESCRIPTION {
+            ?? isA PickAction;
+            ?? isPerformBy ?A;
+            ?A hasServed ?D;
+            ?? isPerformOn ?C;
+            ?C isServedWith ?D;
+        };
+    };
+
+    ACTION Drop(Agent A, Dish D) {
+        PRECONDITIONS {
+            A isInArea WashingArea;
+        };
+        EFFECTS {
+           D isInArea WashingArea;
+           NOT A hasInHand D;
+        };
+        DESCRIPTION {
+            ?? isA DropAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?D;
+        };
+    };
+
+    ACTION Take(Agent A, Dish D)
+    {
+        PRECONDITIONS {
+            A isInArea HatchArea;
+            D isInArea HatchArea;
+        };
+        EFFECTS {
+           A hasInHand D;
+           NOT D isInArea HatchArea;
+        };
+        DESCRIPTION {
+            ?? isA TakeAction;
+            ?? isPerformBy ?A;
+            ?? isPerformOn ?D;
+        };
+    };
+
+    ACTION goTo(Agent A, Location L) {
+        PRECONDITIONS {
+            A isCapableOf moving;
+            NOT A isAt L;
+        };
+        EFFECTS {
+           A isAt L;
+        };
+        DESCRIPTION {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+    };
+
+    ACTION presentMenu(agent A, Menu M) {
+        PRECONDITIONS {
+            SELECT ?Table WHERE {?Table onto:hasArea ?TableArea;};
+            A isInArea ?TableArea;
+            ?Table hasClient ?C;
+            ?C hasStatus installed;
+        };
+        EFFECTS {
+           NOT ?C hasStatus installed;
+           ?C hasStatus A;
+           A isAt L;
+        };
+        DESCRIPTION {
+            ?? isA goToAction;
+            ?? isPerformBy ?A;
+        };
+    };
+
+    ACTION askForOrder(agent A,Client C) {
+        EXECUTION {
+            call_service("/ask_for_order", {"client": C});
+        };
+    };
+
+    ACTION welcomeClient(agent A,Client C) {
+        EXECUTION {
+            verbalize(WELCOME_MESSAGE);
+            askHowMany(C);
+        };
+    };
+
+    ACTION yellOrder(agent A,Order O) {
+        EXECUTION {
+            verbalize_order(O);
+        };
+    };
+
+
+};
+
+// ------------------------------
+// Définition des intentions
+// ------------------------------
+ATTENTES {
+    ROLE client {
+        ATTENTE etre_accueilli {
+            CONDITIONS {
+                ?? isInArea RestaurantArea;
+                NOT ?? isEmployedIn Restaurant;
+            };
+        };
+        ATTENTE etre_assis {
+            CONDITIONS {
+                ?? hasStatus welcomed;
+                ?? hasAvailableTable RestaurantTable;
+            };
+        };
+        ATTENTE commander {
+            CONDITIONS { ?? hasStatus waiting_to_order; };
+        };
+    };
+
+    ROLE chief {
+        ATTENTE preparer_plat {
+            CONDITIONS {
+                ?? hasStatus cooking;
+                ?? hasOrder ?O;
+            };
+        };
+        ATTENTE attend_d_envoyer_les_plats {
+            CONDITIONS {
+                Order hasStatus readyToServe;
+                ?? hasStatus waiting_to_serve;
+            };
+        };
+    };
+};
+
+// ------------------------------
+// Définition des tâches
+// ------------------------------
+TASKS {
+    TASK Get(Agent A, Pickable O) {
+        ENTRY_STATE {
+            SELECT ?client_area WHERE {?C onto:hasArea ?client_area;};
+            ?A hasHandStatus free;
+            ?A isInArea ?client_area;
+        };
+        GOAL {?C hasTable ?T;
+              ?C hasStatus sit; };
+        METHODS {
+            1: {
+                PRECONDITIONS {
+                    SELECT ?table_area WHERE {?T onto:hasArea ?table_area;};
+                    NOT ?A isInArea ?table_area;
+                    NOT ?C isInArea ?table_area;
+                };
+                SUBTASKS {
+                    1:GoTo(T);
+                    2:PresentTable(C, T) > 1;
+                };
+            }
+            manual: {
+                PRECONDITIONS {
+                    SELECT ?table_area WHERE {T onto:hasArea ?table_area;};
+                    NOT ?A isInArea ?table_area;
+                    NOT ?C isInArea ?table_area;
+                };
+                SUBTASKS {
+                    1:GoTo(T);
+                    2:PresentTable(C, T) > 1;
+                    3:AskForOrder(A, C) > 2;
+                };
+            }
+            test: {
+                PRECONDITIONS {
+                    SELECT ?table_area WHERE {T onto:hasArea ?table_area;};
+                    NOT ?A isInArea ?table_area;
+                    NOT ?C isInArea ?table_area;
+                };
+                SUBTASKS {
+                    1:GoTo(T);
+                    2:PresentTable(C, T);
+                    3:AskForOrder(A, C) > 2;
+                };
+            }
+        };
+        COST { 10; };
+        DURATION { 10; };
+        PARAMETERS { ttl(10); };
+    };
+
+
+};
+
+// ------------------------------
+// Définition des priorités
+// ------------------------------
+PRIORITIES {
+    PRIORITY client_at_welcome_desk {
+        EVENT {
+            SELECT * WHERE {?C onto:hasRole client; ?C onto:expect etre_accueilli ; ?C onto:isInArea WelcomeAreaDesk;};
+        };
+        PRIORITY_LEVEL { 4; };
+        OBJECTIVES {
+            ?C hasStatus welcomed;
+        };
+    };
+};

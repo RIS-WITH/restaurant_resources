@@ -31,6 +31,8 @@
      -->
 
 
+
+
     <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //                                                                                   //
@@ -56,6 +58,11 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
+
+    <!-- restaurant_building#restaurant_building -->
+    <owl:NamedIndividual rdf:about="restaurant_building#restaurant_0">
+        <rdf:type rdf:resource="cg_restaurant#Restaurant"/>
+    </owl:NamedIndividual>
 
 
     <!-- restaurant_building#kitchen_1 -->

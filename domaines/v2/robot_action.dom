@@ -1,7 +1,8 @@
 actions {
     action Serve(Agent A, Client C,Dish D) {
        execution {
-            callTriggerService(/present_arm);
+            callTriggerService(/pr2_task/present_plate);
+            callTriggerService(/pr2_task/rest_plate);
         };
         description {
             NOT ?? isA PickAction;
@@ -15,14 +16,16 @@ actions {
 
     action Drop(Agent A, Dish D) {
     	execution {
-            callTriggerService(/drop_arm);
+            callTriggerService(/pr2_task/empty_plate);
+            callTriggerService(/pr2_task/rest_plate);
         };
     };
 
     action Take(Agent A, Dish D)
     {
         execution {
-            callTriggerService(/present_arm);
+            callTriggerService(/pr2_task/present_plate);
+            callTriggerService(/pr2_task/rest_plate);
         };
     };
 
