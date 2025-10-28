@@ -4,17 +4,18 @@ include {
     "package::restaurant_resources/domaines/v2/signaling.dom";
     "package::restaurant_resources/domaines/v2/priorities.dom";
     "package::restaurant_resources/domaines/v2/robot_action.dom";
+    "package::restaurant_resources/domaines/restaurant_tasks.dom";
 };
 
 
 PRACTICE_FRAMES {
     PRACTICE_FRAME restaurant {
         DESCRIPTION {
-            "Ensemble des pratiques sociales nécessaires pour gérer l’expérience client dans un restaurant, de l’accueil jusqu’au rangement après le service."
+            "Ensemble des pratiques sociales nécessaires pour gérer l'expérience client dans un restaurant, de l'accueil jusqu'au rangement après le service."
         };
         CONDITIONS {
             SELECT * WHERE {
-                myself onto:isIn Restaurant.
+                pr2 onto:isIn Restaurant.
             }
         };
         PRACTICES_LIST {
@@ -29,34 +30,158 @@ PRACTICE_FRAMES {
         };
 
         ROLES {
+            - employeeOfRestaurant {
+                CONDITIONS {
+                    SELECT * WHERE { ?? onto:hasRole employeeOfRestaurant.}
+                };
+                CAPACITES: {
+                    CAPACITE travail_restaurant {
+                        CAN_SATISFY_EXPECTATIONS: [basic_work];
+                        DESCRIPTION: "Capacité basique de travail en restaurant";
+                        CONDITIONS {
+                            SELECT * WHERE {
+                                ?? hasStatus available;
+                            }
+                        };
+                    };
+                };
+            };
+
             - serveur {
                 CONDITIONS {
                     SELECT * WHERE { ?? onto:hasRole employeeOfRestaurant. ?? onto:hasCapability serve. }
+                };
+                CAPACITES: {
+                    CAPACITE servir {
+                        CAN_SATISFY_EXPECTATIONS: [service_repas, presentation_menu];
+                        DESCRIPTION: "Capacité de servir les clients et présenter le menu";
+                        CONDITIONS {
+                            SELECT * WHERE { 
+                                ?? hasStatus available;
+                                ?? isInArea RestaurantArea OR ?? canReach RestaurantArea;
+                            }
+                        };
+                    };
+                };
+                ATTENTES: {
+                    ATTENTE environment_ready {
+                        TYPE: work_environment_ready;
+                        EXPECTS_FROM: [agent_entretien];
+                        DESCRIPTION: "Environnement de travail préparé et propre";
+                        CONDITIONS {
+                            SELECT * WHERE { ?? hasWorkShift active. }
+                        };
+                    };
                 };
             };
             - agent_accueil {
                 CONDITIONS {
                     SELECT * WHERE { ?? onto:hasRole employeeOfRestaurant. ?? onto:hasCapability welcome. }
                 };
+                
+                ATTENTES: {
+                    ATTENTE room_ready {
+                        TYPE: work_environment_ready;
+                        EXPECTS_FROM: [agent_entretien];
+                        DESCRIPTION: "Zone d'accueil préparée";
+                        CONDITIONS {
+                            SELECT * WHERE { ?? hasWorkShift active. }
+                        };
+                    };
+                };
             };
             - client {
                 CONDITIONS {
                     SELECT * WHERE { NOT {?? onto:hasRole employeeOfRestaurant.}. }
+                };
+                ATTENTES: {
+                    ATTENTE service_repas {
+                        TYPE: service_repas;
+                        EXPECTS_FROM: [serveur];
+                        DESCRIPTION: "Recevoir un service de qualité";
+                        CONDITIONS {
+                            SELECT * WHERE { ?? onto:hasStatus seated. }
+                        };
+                    };
                 };
             };
             - potentiel_client {
                 CONDITIONS {
                     SELECT * WHERE { ?? onto:hasRole potentiel_client. }
                 };
+                CAPACITES: {
+                    CAPACITE consommation {
+                        CAN_SATISFY_EXPECTATIONS: [];
+                        DESCRIPTION: "Capacité de consommer dans un restaurant";
+                        CONDITIONS {
+                            SELECT * WHERE {
+                                ?? hasStatus present;
+                            }
+                        };
+                    };
+                };
+                ATTENTES: {
+                    ATTENTE accueillit {
+                        TYPE: accueil;
+                        EXPECTS_FROM: [agent_accueil];
+                        DESCRIPTION: "Être accueilli professionnellement à l'arrivée";
+                        CONDITIONS {
+                            SELECT * WHERE { ?? onto:hasStatus new_agent. }
+                        };
+                    };
+                };
             };
             - cuisinier {
                 CONDITIONS {
                     SELECT * WHERE { ?? onto:hasRole employeeOfRestaurant. ?? onto:hasCapability cook. }
                 };
+                CAPACITES: {
+                    CAPACITE cuisiner {
+                        CAN_SATISFY_EXPECTATIONS: [preparation_plats];
+                        DESCRIPTION: "Capacité de préparer les plats";
+                        CONDITIONS {
+                            SELECT * WHERE { 
+                                ?? hasStatus available;
+                                ?? isInArea kitchen_1 OR ?? canReach kitchen_1;
+                            }
+                        };
+                    };
+                };
+                ATTENTES: {
+                    ATTENTE kitchen_ready {
+                        TYPE: work_environment_ready;
+                        EXPECTS_FROM: [agent_entretien];
+                        DESCRIPTION: "Cuisine préparée et équipée";
+                        CONDITIONS {
+                            SELECT * WHERE { ?? hasWorkShift active. }
+                        };
+                    };
+                };
             };
             - agent_entretien {
                 CONDITIONS {
                     SELECT * WHERE { ?? onto:hasRole employeeOfRestaurant. ?? onto:hasCapability clean. }
+                };
+                CAPACITES: {
+                    CAPACITE prepare_environment {
+                        CAN_SATISFY_EXPECTATIONS: [work_environment_ready];
+                        DESCRIPTION: "Capacité de préparer l'environnement de travail";
+                        CONDITIONS {
+                            SELECT * WHERE { 
+                                ?? hasCapability clean;
+                                ?? hasCapability organize;
+                            }
+                        };
+                    };
+                    CAPACITE nettoyer {
+                        CAN_SATISFY_EXPECTATIONS: [nettoyage_zone];
+                        DESCRIPTION: "Capacité de nettoyer les zones";
+                        CONDITIONS {
+                            SELECT * WHERE { 
+                                ?? hasEquipment cleaning_tools;
+                            }
+                        };
+                    };
                 };
             };
         };
@@ -89,15 +214,31 @@ PRACTICES {
         };
         ROLES {
             - employeeOfRestaurant {
+                CAPACITES: {
+                    CAPACITE accueillir {
+                        CAN_SATISFY_EXPECTATIONS: [accueil];
+                        DESCRIPTION: "Capacité d'accueillir les clients professionnellement";
+                        CONDITIONS {
+                            SELECT * WHERE { 
+                                ?? hasStatus available;
+                                ?? isInArea WelcomingArea OR ?? canReach WelcomingArea;
+                            }
+                        };
+                    };
+                };
                 ATTENTES: {
                     ATTENTE room_ready {
+                        TYPE: work_environment_ready;
+                        EXPECTS_FROM: [agent_entretien];
+                        DESCRIPTION: "Zone d'accueil préparée";
                         CONDITIONS {
-                            SELECT ?restaurant, ?restaurant_area WHERE {
+                            SELECT ?restaurant, ?restaurant_area WHERE {    
                                 ?restaurant onto:hasArea ?restaurant_area.
                                 ?restaurant onto:isA Restaurant.
                             }
-                            ?? isInArea ?restaurant_area;
-                            ?restaurant hasRoomStatus not_ready;
+                            
+                            SELECT * WHERE {?? onto:isInArea ?restaurant_area.
+                            ?restaurant onto:hasRoomStatus not_ready.}
                         };
                     };
                 }
@@ -105,13 +246,18 @@ PRACTICES {
             - potentiel_client {
                 ATTENTES: {
                     ATTENTE accueillit {
-                        ID
+                        TYPE: accueil;
+                        EXPECTS_FROM: [agent_accueil];
+                        DESCRIPTION: "Être accueilli professionnellement à l'arrivée";
                         CONDITIONS {
                             SELECT * WHERE { ?? onto:hasStatus new_agent. }
                         };
                     };
 
                     ATTENTE conseiller {
+                        TYPE: conseil;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Recevoir des conseils et de l'assistance";
                         CONDITIONS {
                             SELECT * WHERE { ?? onto:isInArea WelcomingArea. }
                         };
@@ -130,7 +276,7 @@ PRACTICES {
         };
     };
 
-    PRACTICE 
+    
 //
 //    PRACTICE accueil_client {
 //        DESCRIPTION {
@@ -151,7 +297,7 @@ PRACTICES {
 //            - potentiel_client;
 //        };
 //        COMPETENCES {
-//            - "Détecter la présence d’un client."
+//            - "Détecter la présence d'un client."
 //            - "Initier une interaction verbale."
 //            - "Guider vers une zone appropriée."
 //        };
@@ -167,7 +313,7 @@ PRACTICES {
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole serveur.
+//                pr2 onto:hasRole serveur.
 //                Client onto:hasStatus seated.
 //            }
 //        };
@@ -196,9 +342,9 @@ PRACTICES {
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole serveur.
+//                pr2 onto:hasRole serveur.
 //                client onto:readyToOrder true.
-//                myself onto:isInArea client_table.
+//                pr2 onto:isInArea client_table.
 //            }
 //        };
 //        OBJECTS {
@@ -226,7 +372,7 @@ PRACTICES {
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole serveur.
+//                pr2 onto:hasRole serveur.
 //                Order onto:status pendingTransmission.
 //            }
 //        };
@@ -240,7 +386,7 @@ PRACTICES {
 //        };
 //        COMPETENCES {
 //            - "Encoder correctement la commande."
-//            - "Vérifier les temps d’attente estimés."
+//            - "Vérifier les temps d'attente estimés."
 //        };
 //        RULES {
 //            - "Vérifier la disponibilité des plats avant de confirmer la commande."
@@ -253,7 +399,7 @@ PRACTICES {
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole serveur.
+//                pr2 onto:hasRole serveur.
 //                Order onto:status readyForService.
 //            }
 //        };
@@ -267,22 +413,22 @@ PRACTICES {
 //        };
 //        COMPETENCES {
 //            - "Transporter les plats avec précaution."
-//            - "Poser les plats correctement selon l’ordre des commandes."
+//            - "Poser les plats correctement selon l'ordre des commandes."
 //            - "Observer les réactions du client."
 //        };
 //        RULES {
-//            - "Vérifier que le client a tout ce qu’il a commandé."
+//            - "Vérifier que le client a tout ce qu'il a commandé."
 //            - "Demander si autre chose est nécessaire."
 //        };
 //    };
 //
 //    PRACTICE encaissement {
 //        DESCRIPTION {
-//            "Présenter l’addition, gérer le paiement et remercier le client."
+//            "Présenter l'addition, gérer le paiement et remercier le client."
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole serveur.
+//                pr2 onto:hasRole serveur.
 //                Client onto:readyToPay true.
 //            }
 //        };
@@ -311,7 +457,7 @@ PRACTICES {
 //        };
 //        CONDITIONS {
 //            SELECT * WHERE {
-//                myself onto:hasRole agent_entretien.
+//                pr2 onto:hasRole agent_entretien.
 //                restaurant_area onto:status requiresCleaning.
 //            }
 //        };
@@ -325,7 +471,7 @@ PRACTICES {
 //        };
 //        COMPETENCES {
 //            - "Identifier les zones sales."
-//            - "Réorganiser l’espace selon les standards."
+//            - "Réorganiser l'espace selon les standards."
 //            - "Utiliser les outils de nettoyage de manière efficace."
 //        };
 //        RULES {
@@ -338,78 +484,129 @@ PRACTICES {
 
 
 
-
 // ------------------------------
 // Définition des actions
 // ------------------------------
 ACTIONS {
-    ACTION goTo(Agent A, Location L) {
+    ACTION goTo(Location L) {
         PRECONDITIONS {
-            A isCapableOf moving;
-            NOT A isAt L;
+            ?@executor isCapableOf moving;
+            NOT ?@executor isAt L;
         };
+
         EFFECTS {
-           A isAt L;
+           ?@executor isAt L;
         };
+
+        // RECOGNITION {
+        //    SEQUENCE {
+        //         ?@executor isInArea ?L REQUIRED;
+        //    };
+        //    PARAMETERS {
+        //        ttl(20);
+        //    };
+        // };
         DESCRIPTION {
             ?? isA goToAction;
-            ?? isPerformBy ?A;
+            ?? hasObjectif ?L;
+            ?? isPerformBy ?@executor;
         };
         EXECUTION {
-            call_service("/go_to", {"agent": A, "location": L});
+            call_service("/go_to", {"location": L});
         };
     };
 
-    ACTION goToArea(Agent A, Area T) {
+    ACTION Saluer(Agent Target) {
         PRECONDITIONS {
-            A isCapableOf moving;
-            NOT A isInArea T;
+            ?@executor isCapableOf welcoming;
+            ?@executor hasStatus available;
+            ?@executor isInArea WelcomingArea;
+            Target isInArea WelcomingArea;
         };
         EFFECTS {
-           A isInArea T;
+           Target hasStatus welcomed;
+        };
+        RECOGNITION {
+           SEQUENCE {
+                ?Target canHear ?@executor;
+                ?@executor says WelcomeSentence REQUIRED;
+           };
+           PARAMETERS {
+               ttl(20);
+           };
+        };
+        DESCRIPTION {
+            ?? isA welcomeAction;
+            ?? isPerformBy ?@executor;
+            ?? isPerformOn ?Target;
+        };
+        EXECUTION {
+            call_service("/saluer", {"target": Target});
+        };
+    }
+    
+
+    ACTION GoToArea(Area T) {
+        PRECONDITIONS {
+            ?@executor isCapableOf moving;
+            NOT ?@executor isInArea T;
+        };
+        EFFECTS {
+           ?@executor isInArea T;
+        };
+        RECOGNITION {
+           SEQUENCE {
+                ?@executor hasHandStatus free;
+                ?@executor isInArea ?T REQUIRED;
+           };
+           PARAMETERS {
+               ttl(20);
+           };
         };
         DESCRIPTION {
             ?? isA goToAction;
-            ?? isPerformBy ?A;
+            ?? hasObjectif ?T;
+            ?? isPerformBy ?@executor;
         };
         EXECUTION {
-            call_service("/go_to_area", {"agent": A, "area": T});
+            call_service("/go_to_area", {"area": T});
         };
     };
 
-    ACTION updateTableStatus(Agent A, Table T)
+    ACTION updateTableStatus(Table T)
     {
         PRECONDITIONS {
-            A isCapableOf updating;
+            ?@executor isCapableOf updating;
+            ?@executor isInArea RestaurantArea;
         };
         EFFECTS {
            T hasStatus not_unknown;
         };
         DESCRIPTION {
             ?? isA updateTableStatusAction;
-            ?? isPerformBy ?A;
+            ?? isPerformBy ?@executor;
             ?? isPerformOn ?T;
 
         };
         EXECUTION {
-            call_service("/update_table_status", {"agent": A, "table": T});
+            call_service("/update_table_status", {"table": T});
         };
     };
 
-    ACTION patrol(Agent A) {
+    ACTION patrol() {
         PRECONDITIONS {
-            A isCapableOf moving;
+            ?@executor isCapableOf moving;
+            ?@executor hasStatus available;
         };
         EFFECTS {
-           A isEngagedIn patrolAction;
+           ?@executor isEngagedIn patrolAction;
         };
         DESCRIPTION {
             ?? isA patrolAction;
-            ?? isPerformBy ?A;
-            ?? isPerformOn ?T;
+            ?? isPerformBy ?@executor;
         };
         EXECUTION {
-            call_service("/patrol", {"agent": A});
+            call_service("/patrol", {});
         };
     };
 };
@@ -422,46 +619,48 @@ PRIORITIES {
 
     PRIORITY Accueillir {
         EVENT {
-            SELECT * WHERE {?? onto:hasRole employeeOfRestaurant. Agent onto:expect etre_accueillit. ?pratice practice:isAvailable salutation. };
+            SELECT ?agent WHERE {?? agentworld:matchExpectation accueil. ?agent agentworld:hasActiveExpectationType accueil.}
         };
         PRIORITY_LEVEL { 5; };
 
         OBJECTIVES {
+            STATE {
+                // SELECT ?Agent WHERE {
+            //     ?Agent onto:hasRole potentiel_client.
+            //     ?Agent onto:expect etre_accueillit.
+            // }
 
-            SELECT ?Agent WHERE {
-                ?Agent onto:hasRole potentiel_client;
-                ?Agent onto:expect etre_accueillit;
+            // ?Agent hasStatus welcomed;
             };
-
-            ?Agent hasStatus welcomed;
+            TASK: Accueillir(?agent)
         };
-    }
+    };
 
 
     PRIORITY PrepareRoom {
         EVENT {
-            SELECT * WHERE {?A onto:hasRole employeeOfRestaurant. ?A onto:expect room_ready. };
+            SELECT * WHERE {?A onto:hasRole employeeOfRestaurant. ?A onto:expect room_ready. }
         };
         PRIORITY_LEVEL { 4; };
         OBJECTIVES {
             SELECT ?restaurant_room WHERE {
-                ?restaurant_room onto:isA RestaurantRoom;
-                ?restaurant_room onto:hasStatus not_ready;
-            };
+                ?restaurant_room onto:isA RestaurantRoom.
+                ?restaurant_room onto:hasStatus not_ready.
+            }
             ?restaurant_room isCleaned False;
         };
     };
 
     PRIORITY PrepareTables {
         EVENT {
-            SELECT * WHERE {?A onto:hasRole employeeOfRestaurant; ?A onto:expect table_ready ; };
+            SELECT * WHERE {?A onto:hasRole employeeOfRestaurant. ?A onto:expect table_ready. }
         };
         PRIORITY_LEVEL { 4; };
         OBJECTIVES {
             SELECT ?restaurant_table WHERE {
-                ?restaurant_table onto:isA RestaurantTable;
-                ?restaurant_table onto:hasStatus not_ready;
-            };
+                ?restaurant_table onto:isA RestaurantTable.
+                ?restaurant_table onto:hasStatus not_ready.
+            }
             ?restaurant_table hasStatus ready;
         };
     };
@@ -473,6 +672,45 @@ PRIORITIES {
 // Définition des tâches
 // ------------------------------
 TASKS {
+    TASK Accueillir(Agent A){
+        ENTRY_STATE {
+            ?? hasHandStatus free;
+            ?? isInArea WelcomingArea;
+        };
+        GOAL {
+            ?A hasStatus welcomed;
+        };
+        METHODS {
+            1: {
+                PRECONDITIONS {
+                    ?? hasHandStatus free;
+                    NOT ?? isInArea WelcomingArea;
+                };
+                SUBTASKS {
+                    1:GoToArea(WelcomingArea);
+                    2:Saluer(A) > 1;
+                };
+            }
+            2: {
+                PRECONDITIONS {
+                    ?? hasHandStatus free;
+                    ?? isInArea WelcomingArea;
+                };
+                SUBTASKS {
+                    1:Saluer(A);
+                };
+            }
+        }
+        COST { 5; };
+        DURATION { 5; };
+        PARAMETERS { ttl(10); };
+    };
+      
+
+
+
+
+
     TASK PrepareRoom(Agent A, RestaurantRoom R) {
         ENTRY_STATE {
             SELECT ?client_area WHERE {?C onto:hasArea ?client_area;};

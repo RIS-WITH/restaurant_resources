@@ -11,13 +11,33 @@ actions {
             ?? isPerformOn ?C;
             ?C isServedWith ?D;
         };
-
+        recognition {
+            sequence {
+                ?A isCarrying ?D;
+                ?A isNear ?C;
+                ?A isPresenting ?D;
+                ?C isServedWith ?D REQUIRED;
+            };
+            parameters {
+                ttl(20);
+            };
+        };
     };
 
     action Drop(Agent A, Dish D) {
     	execution {
             callTriggerService(/pr2_task/empty_plate);
             callTriggerService(/pr2_task/rest_plate);
+        };
+        recognition {
+            sequence {
+                ?A isCarrying ?D;
+                ?A isDropping ?D;
+                NOT ?A isCarrying ?D REQUIRED;
+            };
+            parameters {
+                ttl(10);
+            };
         };
     };
 
@@ -26,6 +46,16 @@ actions {
         execution {
             callTriggerService(/pr2_task/present_plate);
             callTriggerService(/pr2_task/rest_plate);
+        };
+        recognition {
+            sequence {
+                ?A isNear ?D;
+                ?A isReaching ?D;
+                ?A isCarrying ?D REQUIRED;
+            };
+            parameters {
+                ttl(12);
+            };
         };
     };
 
@@ -38,17 +68,46 @@ actions {
             ?? isPerformBy ?A;
             NOT ?A isin ?L;
         };
+        recognition {
+            sequence {
+                ?A isMoving true;
+                ?A isAt ?L REQUIRED;
+            };
+            parameters {
+                ttl(15);
+            };
+        };
     };
 
     action presentMenu(Agent A, Menu M) {
         execution {
             callMenuService(/present_menu, {agent: A, menu: M});
         };
+        recognition {
+            sequence {
+                ?A isHolding ?M;
+                ?A isShowing ?M;
+                ?M isVisible true REQUIRED;
+            };
+            parameters {
+                ttl(8);
+            };
+        };
     };
 
     action askForOrder(Agent A,Client C) {
         execution {
             callOrderService(/ask_for_order, {client: C});
+        };
+        recognition {
+            sequence {
+                ?A isSpeaking true;
+                ?C isListening true;
+                ?C hasOrdered true REQUIRED;
+            };
+            parameters {
+                ttl(30);
+            };
         };
     };
 
@@ -57,11 +116,30 @@ actions {
             verbalize(WELCOME_MESSAGE);
             askHowMany(C);
         };
+        recognition {
+            sequence {
+                ?A isApproaching ?C;
+                ?A isSpeaking true;
+                ?C isWelcomed true REQUIRED;
+            };
+            parameters {
+                ttl(15);
+            };
+        };
     };
 
     action yellOrder(Agent A,Order O) {
         execution {
             verbalizeOrder(O);
+        };
+        recognition {
+            sequence {
+                ?A isSpeaking true;
+                ?O isAnnounced true REQUIRED;
+            };
+            parameters {
+                ttl(5);
+            };
         };
     };
 

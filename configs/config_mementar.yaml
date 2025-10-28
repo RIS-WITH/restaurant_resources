@@ -1,0 +1,8 @@
+whitelist:
+  - isInArea
+  - says
+  - hasHandStatus
+  - canHear
+#blacklist:
+#  - isPositioned
+#  - hasColor

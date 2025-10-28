@@ -1,0 +1,206 @@
+// Définitions des tâches HTN pour le restaurant
+// Correspondance avec les priorités définies dans restaurant_priorities.yaml
+
+TASKS {
+    // Tâche d'accueil des clients
+    task AccueillirClients(Agent robot, Agent client) {
+        goals {
+            client hasStatus welcomed
+        }
+        arguments {
+            robot : Agent
+            client : Agent
+        }
+        method method_accueil {
+            preconditions {
+                robot isInArea WelcomeArea
+                robot hasEmptyHand true
+                client isInArea WelcomeArea
+                NOT { client hasStatus welcomed }
+            }
+            subtask {
+                0: ApproacherClient(robot, client)
+                1: SaluerClient(robot, client) after {0}
+                2: DemanderNombrePersonnes(robot, client) after {1}
+            }
+        }
+    }
+
+    // Tâche d'installation des clients
+    task InstallerLesClients(Agent robot, Agent client, Table table) {
+        goals {
+            client isSeatedAt table
+            table hasStatus occupied
+        }
+        arguments {
+            robot : Agent
+            client : Agent
+            table : Table
+        }
+        method method_installation {
+            preconditions {
+                client hasStatus welcomed
+                table hasStatus available
+                robot isInArea WelcomeArea
+            }
+            subtask {
+                0: TrouverTableLibre(robot, table)
+                1: AccompagnerClientTable(robot, client, table) after {0}
+                2: ProposerMenu(robot, client) after {1}
+            }
+        }
+    }
+
+    // Tâche de prise de commande
+    task PrendreCommande(Agent robot, Table table) {
+        goals {
+            table hasStatus order_taken
+        }
+        arguments {
+            robot : Agent
+            table : Table
+        }
+        method method_commande {
+            preconditions {
+                table hasStatus without_order
+                robot hasEmptyHand true
+            }
+            subtask {
+                0: SeRendreTable(robot, table)
+                1: DemanderCommande(robot, table) after {0}
+                2: NoterCommande(robot, table) after {1}
+                3: ConfirmerCommande(robot, table) after {2}
+            }
+        }
+    }
+
+    // Tâche de service des repas
+    task ServirRepas(Agent robot, Dish dish, Table table) {
+        goals {
+            dish hasStatus served
+            table hasStatus served
+        }
+        arguments {
+            robot : Agent
+            dish : Dish
+            table : Table
+        }
+        method method_service {
+            preconditions {
+                dish hasStatus ready_to_serve
+                robot isInArea HatchArea
+                robot hasEmptyHand true
+            }
+            subtask {
+                0: PrendrePlat(robot, dish)
+                1: SeRendreTable(robot, table) after {0}
+                2: ServirPlat(robot, dish, table) after {1}
+                3: SouhaiterBonAppetit(robot, table) after {2}
+            }
+        }
+    }
+
+    // Tâche de débarrassage
+    task DebarasserTable(Agent robot, Table table) {
+        goals {
+            table hasStatus clean
+            table hasStatus available
+        }
+        arguments {
+            robot : Agent
+            table : Table
+        }
+        method method_debarrassage {
+            preconditions {
+                table hasStatus finished_eating
+                robot hasEmptyHand true
+            }
+            subtask {
+                0: SeRendreTable(robot, table)
+                1: DemanderSiTermine(robot, table) after {0}
+                2: DebarasserAssiettes(robot, table) after {1}
+                3: NettoyerTable(robot, table) after {2}
+            }
+        }
+    }
+}
+
+// Définition des actions primitives utilisées dans les tâches
+ACTIONS {
+    action ApproacherClient(Agent robot, Agent client) {
+        preconditions {
+            robot isInArea WelcomeArea
+            client isInArea WelcomeArea
+        }
+        effects {
+            robot isNear client
+        }
+        duration { 3.0 }
+    }
+
+    action SaluerClient(Agent robot, Agent client) {
+        preconditions {
+            robot isNear client
+        }
+        effects {
+            client hasStatus greeted
+        }
+        duration { 2.0 }
+    }
+
+    action DemanderNombrePersonnes(Agent robot, Agent client) {
+        preconditions {
+            client hasStatus greeted
+        }
+        effects {
+            client hasStatus welcomed
+        }
+        duration { 5.0 }
+    }
+
+    action SeRendreTable(Agent robot, Table table) {
+        preconditions {
+            robot hasEmptyHand true
+        }
+        effects {
+            robot isNear table
+        }
+        duration { 5.0 }
+    }
+
+    action DemanderCommande(Agent robot, Table table) {
+        preconditions {
+            robot isNear table
+            table hasStatus without_order
+        }
+        effects {
+            table hasStatus ordering
+        }
+        duration { 10.0 }
+    }
+
+    action PrendrePlat(Agent robot, Dish dish) {
+        preconditions {
+            robot hasEmptyHand true
+            dish hasStatus ready_to_serve
+        }
+        effects {
+            robot hasInHand dish
+            dish hasStatus being_carried
+        }
+        duration { 2.0 }
+    }
+
+    action ServirPlat(Agent robot, Dish dish, Table table) {
+        preconditions {
+            robot hasInHand dish
+            robot isNear table
+        }
+        effects {
+            robot hasEmptyHand true
+            dish hasStatus served
+            table hasStatus served
+        }
+        duration { 3.0 }
+    }
+}
