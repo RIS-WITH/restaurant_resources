@@ -494,15 +494,12 @@ PRACTICES {
         DESCRIPTION {
             "Mode de service brasserie (rapide, decontracte). Active 11h30-14h30."
         };
-        // Phase 4-bis : condition reformulee sur propriete derivee.
-        // - FILTER non supporte par Yggdrasil
-        // - sujet doit etre litteral (variables non extraites)
-        // - prefix onto: requis pour router via OntologeniusDataSource
-        // sys_clock_publisher publie 'LeComptoir hasActiveServiceMode brasserie'
-        // selon l'heure simulee (mode -> brasserie en [11h,15h)).
+        // Phase 10 F4 : condition migree vers TimeDataSource (Yggdrasil).
+        // sys_clock_publisher publie un std_msgs/Time sur /yggdrasil/sim_clock
+        // que TimeDataSource consomme pour evaluer time:isInRange.
         CONDITIONS {
             SELECT * WHERE {
-                LeComptoir onto:hasActiveServiceMode brasserie.
+                TheClock time:isInRange "11:30-14:30".
             }
         };
         ROLES {
@@ -542,10 +539,10 @@ PRACTICES {
         DESCRIPTION {
             "Mode de service gastronomique (formel, ceremonial). Active 19h-22h."
         };
-        // Phase 4-bis : meme reformulation que BrasserieService.
+        // Phase 10 F4 : meme migration que BrasserieService.
         CONDITIONS {
             SELECT * WHERE {
-                LeComptoir onto:hasActiveServiceMode gastronomic.
+                TheClock time:isInRange "19:00-22:00".
             }
         };
         ROLES {
