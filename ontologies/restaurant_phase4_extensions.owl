@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:phase4="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_phase4_extensions#"
+     xmlns:restaurant_expectations="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_expectations#"
+     xmlns:cg_entities="https://github.com/RIS-WITH/common_ground_ontology/blob/master/CG_entities#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_phase4_extensions">
+      <owl:imports rdf:resource="https://github.com/RIS-WITH/restaurant_ressources/blob/master/ontologies/restaurant_expectations"/>
+    </owl:Ontology>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Phase 4-bis extensions : Service Mode + new expectations for Ch6 §6.2
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- ServiceMode class -->
+
+    <owl:Class rdf:about="phase4#ServiceMode">
+        <rdfs:subClassOf rdf:resource="cg_entities#ConceptualEntity"/>
+    </owl:Class>
+
+
+    <!-- ObjectProperty hasServiceMode (mode declare statiquement par lieu) -->
+
+    <owl:ObjectProperty rdf:about="phase4#hasServiceMode">
+        <rdfs:domain rdf:resource="cg_entities#Entity"/>
+        <rdfs:range rdf:resource="phase4#ServiceMode"/>
+    </owl:ObjectProperty>
+
+
+    <!-- ObjectProperty hasActiveServiceMode (mode actif courant, derivee de l'horloge) -->
+
+    <owl:ObjectProperty rdf:about="phase4#hasActiveServiceMode">
+        <rdfs:domain rdf:resource="cg_entities#Entity"/>
+        <rdfs:range rdf:resource="phase4#ServiceMode"/>
+    </owl:ObjectProperty>
+
+
+    <!-- ServiceMode individuals -->
+
+    <owl:NamedIndividual rdf:about="phase4#brasserie">
+        <rdf:type rdf:resource="phase4#ServiceMode"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#gastronomic">
+        <rdf:type rdf:resource="phase4#ServiceMode"/>
+    </owl:NamedIndividual>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // New expectations (manuscrit Ch6 §6.2 - SPGoals BrasserieService/GastronomicService)
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <owl:NamedIndividual rdf:about="phase4#QuickWelcome">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#QuickMeal">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#FormalWelcome">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#ReceiveDish">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#WineAdvice">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#DiningExperience">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="phase4#dessert">
+        <rdf:type rdf:resource="restaurant_expectations#Expectation"/>
+    </owl:NamedIndividual>
+
+
+    <!-- Restaurant individual : LeComptoir (manuscrit Ch6 §6.2) -->
+
+    <owl:NamedIndividual rdf:about="phase4#LeComptoir">
+        <rdf:type rdf:resource="cg_entities#Entity"/>
+    </owl:NamedIndividual>
+
+
+    <!-- Customer class (sous-classe de Agent, manuscrit Ch6 §6.2) -->
+
+    <owl:Class rdf:about="phase4#Customer">
+        <rdfs:subClassOf rdf:resource="cg_entities#Agent"/>
+    </owl:Class>
+
+
+    <!-- Phase 10 : individus par defaut pour ServeFood args (hardcoded pour MVP) -->
+
+    <owl:Class rdf:about="phase4#Dish">
+        <rdfs:subClassOf rdf:resource="cg_entities#PhysicalEntity"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="phase4#Table">
+        <rdfs:subClassOf rdf:resource="cg_entities#PhysicalEntity"/>
+    </owl:Class>
+
+    <owl:NamedIndividual rdf:about="phase4#default_dish">
+        <rdf:type rdf:resource="phase4#Dish"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="phase4#table_1">
+        <rdf:type rdf:resource="phase4#Table"/>
+    </owl:NamedIndividual>
+
+
+</rdf:RDF>

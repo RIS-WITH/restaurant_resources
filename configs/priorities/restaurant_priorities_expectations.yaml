@@ -54,3 +54,52 @@ priorities:
     entry_state:
       - ["Robot hasEmptyHand bool#true","Robot isInArea DinningArea"]
     variables: []
+
+  # =============================================================================
+  # === PHASE 4 ADD — SPGoals manuscrit Ch6 §6.2 (Restaurant)
+  # === Convention : haut lambda = haute priorite (cf. docs/notation/lambda.md)
+  # =============================================================================
+
+  # Brasserie : accueil bref (lambda=4, routine)
+  - name: "QuickWelcome"
+    priority: 4
+    precondition: ["?A onto:expect QuickWelcome."]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea WelcomingArea"]
+    variables: ["?A"]
+
+  # Gastro : accueil ceremonial (lambda=5, service standard)
+  - name: "FormalWelcome"
+    priority: 5
+    precondition: ["?A onto:expect FormalWelcome."]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea WelcomingArea"]
+    variables: ["?A"]
+
+  # Service plat principal (lambda=7, prioritaire) - declencheur sigma1/sigma2
+  # Phase 10 : 1 arg seulement (?A), aligne avec TASK ServeMainCourse(Agent A).
+  # Le dish/table sont hardcodes (default_dish, table_1) cote dom pour la demo.
+  - name: "ServeMainCourse"
+    priority: 7
+    precondition: ["?A onto:expect ReceiveDish."]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true"]
+    variables: ["?A"]
+
+  # Surveillance niveau de vin (lambda=4, multi-objectif background gastro)
+  - name: "MonitorWineLevel"
+    priority: 4
+    precondition: ["?T onto:isA RestaurantTable","?T onto:hasWine ?W","?W onto:hasLevel low"]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true"]
+    variables: ["?T","?W"]
+
+  # Preparation dessert (lambda=3, tache d'arriere-plan gastro)
+  - name: "PrepareDessert"
+    priority: 3
+    precondition: ["?A onto:expect dessert."]
+    entry_state:
+      - ["Robot hasEmptyHand bool#true","Robot isInArea HatchArea"]
+    variables: ["?A","?T"]
+
+  # === END PHASE 4 ADD

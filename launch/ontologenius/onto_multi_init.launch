@@ -9,6 +9,7 @@
     $(find restaurant_resources)/ontologies/restaurant_menu.owl
     $(find restaurant_resources)/ontologies/restaurant_status.owl
     $(find restaurant_resources)/ontologies/restaurant_expectations.owl
+    $(find restaurant_resources)/ontologies/restaurant_phase4_extensions.owl
     "/>
     <arg name="onto_language" default="fr"/>
     <arg name="onto_root" default="pr2"/>

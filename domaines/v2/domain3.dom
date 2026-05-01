@@ -20,6 +20,10 @@ PRACTICE_FRAMES {
         };
         PRACTICES_LIST {
             - salutation;
+            // === PHASE 4 ADD : pratiques contextuelles temps-de-service (Ch6 §6.2)
+            - BrasserieService;
+            - GastronomicService;
+            // === END PHASE 4 ADD
 //            - accueil_client;
 //            - presentation_menu;
 //            - prise_commande;
@@ -479,6 +483,124 @@ PRACTICES {
 //            - "Signaler les objets endommagés à la supervision."
 //        };
 //    };
+
+    // ============================================================================
+    // === PHASE 4 ADD — Pratiques contextuelles temps-de-service (Ch6 §6.2)
+    // === BrasserieService active 11h30-14h30, GastronomicService active 19h-22h
+    // === Conditions single-clause SPARQL (cf. bug Yggdrasil multi-clause)
+    // ============================================================================
+
+    PRACTICE BrasserieService {
+        DESCRIPTION {
+            "Mode de service brasserie (rapide, decontracte). Active 11h30-14h30."
+        };
+        // Phase 4-bis : condition reformulee sur propriete derivee.
+        // - FILTER non supporte par Yggdrasil
+        // - sujet doit etre litteral (variables non extraites)
+        // - prefix onto: requis pour router via OntologeniusDataSource
+        // sys_clock_publisher publie 'LeComptoir hasActiveServiceMode brasserie'
+        // selon l'heure simulee (mode -> brasserie en [11h,15h)).
+        CONDITIONS {
+            SELECT * WHERE {
+                LeComptoir onto:hasActiveServiceMode brasserie.
+            }
+        };
+        ROLES {
+            - employeeOfRestaurant {
+                CAPACITES: {
+                    CAPACITE CanServeQuickly {
+                        CAN_SATISFY_EXPECTATIONS: [QuickWelcome, QuickMeal];
+                        DESCRIPTION: "Servir rapidement en mode brasserie";
+                    };
+                };
+            };
+            - client {
+                ATTENTES: {
+                    ATTENTE QuickWelcome {
+                        TYPE: accueil_rapide;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Accueil chaleureux mais bref (mode brasserie)";
+                    };
+                    ATTENTE QuickMeal {
+                        TYPE: service_repas;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Repas servi sans formalisme particulier";
+                    };
+                }
+            };
+        };
+        COMPETENCES {
+            - "Adapter le ton au registre informel.";
+            - "Optimiser pour la rapidite.";
+        };
+        RULES {
+            - "Eviter les longues explications de plats.";
+        };
+    };
+
+    PRACTICE GastronomicService {
+        DESCRIPTION {
+            "Mode de service gastronomique (formel, ceremonial). Active 19h-22h."
+        };
+        // Phase 4-bis : meme reformulation que BrasserieService.
+        CONDITIONS {
+            SELECT * WHERE {
+                LeComptoir onto:hasActiveServiceMode gastronomic.
+            }
+        };
+        ROLES {
+            - employeeOfRestaurant {
+                CAPACITES: {
+                    CAPACITE CanServeDish {
+                        CAN_SATISFY_EXPECTATIONS: [ReceiveDish];
+                        DESCRIPTION: "Servir un plat dresse";
+                    };
+                    CAPACITE CanPresentDish {
+                        CAN_SATISFY_EXPECTATIONS: [DiningExperience];
+                        DESCRIPTION: "Presenter un plat avec sa preparation";
+                    };
+                    CAPACITE CanWelcome {
+                        CAN_SATISFY_EXPECTATIONS: [FormalWelcome];
+                        DESCRIPTION: "Accueil ceremonial gastronomique";
+                    };
+                };
+            };
+            - client {
+                ATTENTES: {
+                    ATTENTE FormalWelcome {
+                        TYPE: accueil_ceremonial;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Accueil ceremonial gastronomique";
+                    };
+                    ATTENTE WineAdvice {
+                        TYPE: conseil_vin;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Recommandations sur la carte des vins";
+                    };
+                    ATTENTE DiningExperience {
+                        TYPE: experience_complete;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Experience gastronomique complete";
+                    };
+                    ATTENTE ReceiveDish {
+                        TYPE: service_plat;
+                        EXPECTS_FROM: [employeeOfRestaurant];
+                        DESCRIPTION: "Plat recu avec presentation";
+                    };
+                }
+            };
+        };
+        COMPETENCES {
+            - "Maitriser le vocabulaire gastronomique.";
+            - "Annoncer chaque plat avec sa preparation.";
+        };
+        RULES {
+            - "Toujours presenter le plat avant de le servir.";
+            - "Proposer un complement ou un conseil vin.";
+        };
+    };
+
+    // === END PHASE 4 ADD
 };
 
 
@@ -593,6 +715,115 @@ ACTIONS {
         };
     };
 
+    ACTION GetDish(Dish D) {
+        PRECONDITIONS {
+            ?@executor isCapableOf moving;
+            ?@executor hasHandStatus free;
+            D hasStatus ready_to_serve;
+        };
+        EFFECTS {
+           ?@executor hasInHand D;
+           D hasStatus being_carried;
+        };
+        DESCRIPTION {
+            ?? isA getDishAction;
+            ?? hasObjectif ?D;
+            ?? isPerformBy ?@executor;
+        };
+        EXECUTION {
+            call_service("/get_dish", {"dish": D});
+        };
+    };
+
+    ACTION CheckPresentation(Dish D) {
+        PRECONDITIONS {
+            ?@executor hasInHand D;
+        };
+        EFFECTS {
+           D hasPresentationChecked true;
+        };
+        DESCRIPTION {
+            ?? isA checkPresentationAction;
+            ?? hasObjectif ?D;
+            ?? isPerformBy ?@executor;
+        };
+        EXECUTION {
+            call_service("/check_presentation", {"dish": D});
+        };
+    };
+
+    ACTION GoToTable(Table T) {
+        PRECONDITIONS {
+            ?@executor isCapableOf moving;
+        };
+        EFFECTS {
+           ?@executor isNear T;
+        };
+        DESCRIPTION {
+            ?? isA goToTableAction;
+            ?? hasObjectif ?T;
+            ?? isPerformBy ?@executor;
+        };
+        EXECUTION {
+            call_service("/go_to_table", {"table": T});
+        };
+    };
+
+    ACTION DeliverDish(Dish D, Table T) {
+        PRECONDITIONS {
+            ?@executor hasInHand D;
+            ?@executor isNear T;
+        };
+        EFFECTS {
+           ?@executor hasHandStatus free;
+           D hasStatus served;
+           T hasStatus served;
+        };
+        DESCRIPTION {
+            ?? isA deliverDishAction;
+            ?? isPerformBy ?@executor;
+            ?? isPerformOn ?T;
+        };
+        EXECUTION {
+            call_service("/deliver_dish", {"dish": D, "table": T});
+        };
+    };
+
+    ACTION PresentDish(Dish D, Table T) {
+        PRECONDITIONS {
+            ?@executor isNear T;
+            D hasStatus served;
+        };
+        EFFECTS {
+           D hasStatus presented;
+        };
+        DESCRIPTION {
+            ?? isA presentDishAction;
+            ?? hasObjectif ?D;
+            ?? isPerformBy ?@executor;
+            ?? isPerformOn ?T;
+        };
+        EXECUTION {
+            call_service("/present_dish", {"dish": D, "table": T});
+        };
+    };
+
+    ACTION OfferComplement(Table T) {
+        PRECONDITIONS {
+            ?@executor isNear T;
+        };
+        EFFECTS {
+           T hasComplementOffered true;
+        };
+        DESCRIPTION {
+            ?? isA offerComplementAction;
+            ?? isPerformBy ?@executor;
+            ?? isPerformOn ?T;
+        };
+        EXECUTION {
+            call_service("/offer_complement", {"table": T});
+        };
+    };
     ACTION patrol() {
         PRECONDITIONS {
             ?@executor isCapableOf moving;
@@ -609,6 +840,7 @@ ACTIONS {
             call_service("/patrol", {});
         };
     };
+
 };
 
 // ------------------------------
@@ -709,6 +941,126 @@ TASKS {
 
 
 
+
+
+    // ============================================================================
+    // === PHASE 4 ADD — Task ServeFood avec deux methodes contextuelles (Ch6 §6.2)
+    // === sigma_brasserie : 3 sous-taches (PRECOND : LeComptoir hasServiceMode brasserie)
+    // === sigma_gastronomic : 6 sous-taches (PRECOND : LeComptoir hasServiceMode gastronomic)
+    // ============================================================================
+
+    TASK ServeFood(Dish D, Table T) {
+        ENTRY_STATE {
+            ?? hasHandStatus free;
+            D hasStatus ready_to_serve;
+        };
+        GOAL {
+            D hasStatus served;
+        };
+        METHODS {
+            sigma_brasserie: {
+                PRECONDITIONS {
+                    LeComptoir hasActiveServiceMode brasserie;
+                };
+                SUBTASKS {
+                    1:GetDish(D);
+                    2:GoToTable(T) > 1;
+                    3:DeliverDish(D, T) > 2;
+                };
+            }
+            sigma_gastronomic: {
+                PRECONDITIONS {
+                    LeComptoir hasActiveServiceMode gastronomic;
+                };
+                SUBTASKS {
+                    1:GetDish(D);
+                    2:CheckPresentation(D) > 1;
+                    3:GoToTable(T) > 2;
+                    4:DeliverDish(D, T) > 3;
+                    5:PresentDish(D, T) > 4;
+                    6:OfferComplement(T) > 5;
+                };
+            }
+        };
+        COST { 8; };
+        DURATION { 15; };
+        PARAMETERS { ttl(60); };
+    };
+
+    // Tasks correspondant aux nouveaux SPGoals YAML (Ch6 §6.2)
+    // QuickWelcome (mode brasserie) : accueil bref
+    TASK QuickWelcome(Agent A) {
+        ENTRY_STATE {
+            ?? hasHandStatus free;
+        };
+        GOAL {
+            A hasStatus welcomed;
+        };
+        METHODS {
+            method_brief: {
+                PRECONDITIONS {
+                    ?? hasHandStatus free;
+                };
+                SUBTASKS {
+                    1:Saluer(A);
+                };
+            }
+        };
+        COST { 2; };
+        DURATION { 3; };
+        PARAMETERS { ttl(15); };
+    };
+
+    // FormalWelcome (mode gastronomique) : accueil ceremonial
+    TASK FormalWelcome(Agent A) {
+        ENTRY_STATE {
+            ?? hasHandStatus free;
+        };
+        GOAL {
+            A hasStatus welcomed;
+        };
+        METHODS {
+            method_ceremonial: {
+                PRECONDITIONS {
+                    ?? hasHandStatus free;
+                };
+                SUBTASKS {
+                    1:GoToArea(WelcomingArea);
+                    2:Saluer(A) > 1;
+                };
+            }
+        };
+        COST { 5; };
+        DURATION { 8; };
+        PARAMETERS { ttl(30); };
+    };
+
+    // ServeMainCourse : 1 arg agent (matche le binding Yggdrasil ?A onto:expect ReceiveDish).
+    // Delegue a ServeFood (selection sigma1/sigma2 par hasActiveServiceMode du LeComptoir).
+    // Phase 10 : aligne sur le pattern Hospital (1 arg <-> 1 var bindee).
+    TASK ServeMainCourse(Agent A) {
+        ENTRY_STATE {
+            ?? hasHandStatus free;
+        };
+        GOAL {
+            A hasStatus served;
+        };
+        METHODS {
+            method_serve: {
+                PRECONDITIONS {
+                    ?? hasHandStatus free;
+                };
+                SUBTASKS {
+                    1:ServeFood(default_dish, table_1);
+                };
+            }
+        };
+        COST { 10; };
+        DURATION { 20; };
+        PARAMETERS { ttl(60); };
+    };
+
+    // === END PHASE 4 ADD
 
 
     TASK PrepareRoom(Agent A, RestaurantRoom R) {
